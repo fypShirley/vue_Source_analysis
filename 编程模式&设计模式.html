@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>《js面向对象编程指南》第二版</title>
+</head>
+<body>
+<script>
+/**编程模式**/
+
+    /**
+     行为隔离
+
+         内容：
+             1.尽量避免在 HTML 标签中使用 style 属性；
+             2.不要使用与外观有关的 HTML 标签，例如<font>；
+             3.尽量根据语义需要来选择标签，而不是去考虑浏览器会如何绘制它们。例如，开发人
+             员有时候对<div>标签的使用实际上不如<p>标签来得更合适。同理，我们应该更多
+             地使用<strong>和<em>而不是<b>和<i>，因为后者更强调的是外观而不是语义。
+
+         外观：
+                1.要将外观与内容分开，有一种好方法就是对浏览器默认的绘制行为进行重置，例如
+             YUI 库中的 reset.css。这样一来，浏览器默认的绘制方式就不会影响我们对语义标签
+             的选择了
+
+
+         行为：
+             行为也应该做到与内容及外观分离。行为通常是由
+             JavaScript 负责定义的，且只由'<script>'标签来标记。这些脚本代码最好被存放在外部文
+             件中。这意味着我们使用的不是类似于 onclick, onmouseover 这样的内嵌属性，而是
+             利用前几章中曾经介绍过的 addEventListener/attachEvent 方法来进行事件定义。
+                1.尽可能少用'<script>'标签
+                2.尽量不要使用内嵌事件的处理方法。
+                3.尽量不要使用 CSS 表达式。
+                4.当 JavaScript 被用户禁用时，我们要动态地添加一些表示无目标的替换标记。
+                5.在内容末尾、 <body>标签之前，插入js 文件。
+
+         异步的 JavaScript 代码载入：
+                1.HTML5 为此提供了 defer 属性：(老式浏览器并不支持 defer 属性。)
+                    <script defer src=”behaviors.js”><\/script>
+                2.使用一些内联 JavaScript 代码来载入外部
+                  JavaScript 文件。这段代码可以放在文档的顶部，这样一来外部 JavaScript 文件就会早一些
+                  被载入：
+                     <head>
+                     (function () {
+                        var s = document.createElement('script');
+                        s.src = 'behaviors.js';
+                        document.getElementsByTagName('head')[0].appendChild(s);
+                        }()
+                     );
+                     </head>
+    ***/
+
+
+    /**
+     命名空间
+     *
+     *为了减少命名冲突，我们通常都会尽量减少使用全局变量的机会。但这并不能根本解
+     决问题，更好的办法是将变量和方法定义在不同的命名空间中。这种方法的实质就是只定
+     义一个全局变量，并将其他变量和方法定义为该变量的属性
+
+
+     将对象用做命名空间：var MYAPP = MYAPP || {};
+     
+     命名空间中的构造器应用：
+
+     * **/
+    /**
+     初始化分支；
+      延迟初始（惰性初始）；
+      配置对象；
+      私有变量和方法:
+
+         var MYAPP = {};
+         MYAPP.dom = {};
+         MYAPP.dom.FancyButton = function(text, conf) {
+            var styles = {};
+            function setStyles(b) { }
+            var b = document.createElement('input');
+            b.type = conf.type || 'submit';
+            b.value = text;
+            setStyles(b);
+            return b;
+        };
+         在这段代码中， styles 是一个私有属性，而 setStyles()则是一个私有方法。构
+         造器可以在内部调用它们（它们也可以访问构造器中的任何对象），但它们却不能被外部代
+         码所调用
+
+
+
+
+      特权方法；
+      私有函数的公有:
+             假设我们定义了一个函数，但并不想让外界修改它，于是将其设为私有。但有时候我
+             们又希望让某些外部代码能访问到它，这该如何实现呢？解决方案是将这个私有函数赋值
+             给一个公有属性
+
+             var MYAPP = {};
+             MYAPP.dom = (function(){第 8 章 编程模式与设计模式 287
+                var _setStyle = function(el, prop, value) {};
+                var _getStyle = function(el, prop) {};
+                return {
+                    setStyle: _setStyle,
+                    getStyle: _getStyle,
+                    yetAnother: _setStyle
+                };
+             }());
+
+             在这种情况下，当 MYAPP.dom.setStyle()被调用时，_setStyle()也会被调用。
+             也可以在外面改写 setStyles()方法:
+             MYAPP.dom.setStyle = function(){alert('b');};MYAPP.dom.setStyle 指向的是新的方法,MYAPP.dom.yetAnother 仍然指向_setStyle()；
+
+      即时函数；
+      链式调用；
+      JSON
+     * **/
+
+    /**模块
+     *
+     * 模块模式包括以下几个部分。
+      命名空间：用于减少模块之间的命名冲突。
+      即时函数：用于提供私有作用域以及初始化操作。第 8 章 编程模式与设计模式 289
+      私有属性与方法。
+      作为返回值的对象：该对象作为模块提供公共 API。例如：
+     * */
+
+
+/**设计模式**/
+
+        /**装饰器模式
+         * 装饰器模式是一种结构型模式，它与对象的创建无关，主要考虑的是如何拓展对象的
+         功能。也就是说，除了使用线性式（父－子－孙）继承方式之外，我们也可以为一个基础第 8 章 编程模式与设计模式 297
+         对象创建若干个装饰对象以拓展其功能。然后，由我们的程序自行选择不同的装饰器，并
+         按不同的顺序使用它们。在不同的程序中我们可能会面临不同的需求，并从同样的装饰器
+         集合中选择不同的子集。在下面的代码中，我们为您演示了装饰器模式的一种使用方法：
+         * **/
+    var tree = {};
+    tree.decorate = function() {
+        alert('Make sure the tree won\'t fall');
+    };
+    /*接着，再定义 getDecorator()方法，该方法用于添加额外的装饰器。装饰器被实
+    现为构造器函数，都继承自 tree 对象。*/
+    tree.getDecorator = function(deco){
+        tree[deco].prototype = this;
+        return new tree[deco];
+    };
+   /* 下面来创建第一个装饰器 RedBalls()，我们将它设为 tree 的一个属性（以保持全298 JavaScript 面向对象编程指南（第 2 版）
+    局命名空间的纯净）。 RedBall 对象也提供了 decorate()方法，注意它先调用了父类的
+    decorate()方法。*/
+    tree.RedBalls = function() {
+        this.decorate = function() {
+            this.RedBalls.prototype.decorate();
+            alert('Put on some red balls');
+        };
+    };
+    /*然后，我们用同样的方法来分别添加 BlueBalls()和 Angel()装饰器：*/
+    tree.BlueBalls = function() {
+
+        this.decorate = function() {
+            this.BlueBalls.prototype.decorate();
+            alert('Add blue balls');
+        };
+    };
+    tree.Angel = function() {
+        this.decorate = function() {
+            this.Angel.prototype.decorate();
+            alert('An angel on the top');
+        }
+    };
+
+    /*再把所有的装饰器都添加到基础对象中：*/
+    tree = tree.getDecorator('BlueBalls');
+    tree = tree.getDecorator('Angel');
+    tree = tree.getDecorator('RedBalls');
+    /*最后，运行 decorate()方法：*/
+   // tree.decorate();
+
+
+
+    /**
+     * 观察者模式
+     *
+      一个或多个发布者对象：当有重要的事情发生时，会通知订阅者。
+      一个或多个订阅者对象：它们追随一个或多个发布者，监听它们的通知，并作出
+     相应的反应。
+     * **/
+
+
+    var observer = {
+        addSubscriber:function (callback){
+            if(typeof callback === "function"){//添加订阅者
+                this.subscribers[this.subscribers.length] = callback;
+            }
+        },
+        removeSubscriber:function (callback){//删除订阅者
+            for(var i=0;i<this.subscribers.length;i++){
+                if(this.subscribers[i] === callback){
+                    delete this.subscribers[i];
+                }
+            }
+        },
+        publish:function (what) {//授受并传递数据给订阅者
+            for(var i=0;i<this.subscribers.length;i++){
+                if(typeof this.subscribers[i] === "function"){
+                    this.subscribers[i](what);
+                }
+            }
+        },
+        make:function(o){//将任意对象转变为一个发布者并为其添加上述方法。
+            for(var i in this){//this->observer{addSubscriber: ƒ, removeSubscriber: ƒ, publish: ƒ, make:f}
+                if(this.hasOwnProperty(i)){
+                    o[i] = this[i];
+                    o.subscribers = [];
+                }
+            }//o-> {addSubscriber: ƒ, removeSubscriber: ƒ, publish: ƒ, make:f,subscribers:[],o.XX}
+        }
+    };
+    console.log(observer)
+    /**接下来，我们来创建一些订阅者。订阅者可以是任意对象，它们的唯一职责是在某些
+     重要事件发生时调用 publish()方法。
+     * */
+
+    var blogger = {
+        writeBlogPost : function(){
+            var content = 'writeBlogPost';
+            this.publish(content);
+        }
+    };
+
+    var la_times = {
+        newIssue : function(){
+            var paper = 'la_times';
+            this.publish(paper);
+        }
+    };
+    /** 它们都很容易转变为发布者：**/
+    observer.make(blogger);//blogger:{addSubscriber: ƒ, removeSubscriber: ƒ, publish: ƒ, make:f,subscribers:[],writeBlogPost:f}
+    observer.make(la_times);//la_times:{addSubscriber: ƒ, removeSubscriber: ƒ, publish: ƒ, make:f,subscribers:[],newIssue:f}
+
+    /** 与此同时，准备两个简单对象 jack 和 jill： **/
+
+    var jack = {
+        read:function (what){
+            console.log('jack.read: '+what);
+        }
+    };
+    var jill = {
+        gossip : function(what){
+            console.log('jill.gossip: '+what);
+        }
+    };
+
+    /** 添加订阅事件*/
+    blogger.addSubscriber(jack.read);
+    blogger.addSubscriber(jill.gossip);
+
+    blogger.writeBlogPost();
+    //jack.read: writeBlogPost
+    //jill.gossip: writeBlogPost
+
+//    blogger.removeSubscriber(jill.gossip);
+
+//    blogger.writeBlogPost(); //jack.read: writeBlogPost
+
+
+/** jill 也可以订阅 LA Times，因为一个订阅者可以对应多个发布者。 **/
+    la_times.addSubscriber(jill.gossip);
+
+    la_times.newIssue();
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>vue</title>
+</head>
+<body>
+<div id="app">
+    <h2>{{name1}}</h2>
+    <h2>{{name2}}</h2>
+
+
+    <input type="text" v-model="title">
+    <h3>{{title}}</h3>
+
+
+    <button v-on:click="clickMe">v-on事件</button>
+    <h3>{{event}}</h3>
+</div>
+
+    <script src="js-second/observer.js"></script>
+    <script src="js-second/watcher.js"></script>
+    <script src="js-second/compile.js"></script>
+    <script src="js-second/selfVue.js"></script>
+<script>
+
+    var self_vue = new SelfVue({
+        el:"#app",
+        data:{
+            name1:'我是name1',
+            name2:'我是name2',
+            event:'event',
+            title:'title初始值'
+        },
+        methods:{
+            clickMe:function(){
+                this.event = '事件重新赋值'
+            }
+        },
+        mounted:function(){
+            console.log('mounted')
+        }
+    });
+
+   /* window.setTimeout(function(){
+        self_vue.name1 = 'name1再次赋值'
+    },2000);
+    window.setTimeout(function(){
+        self_vue.name2 = 'name2再次赋值'
+    },3000)*/
+</script>
+</body>
+</html>

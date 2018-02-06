@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>装饰者模式</title>
+</head>
+<body>
+<script>
+    /**在不改变对象自身的基础上，在程序运行期间给对象动态的添加职责
+     * */
+
+    //1、
+    Function.prototype.fn = function(fn){
+        var self = this;
+        return function(){
+            self.apply(this,arguments);
+            fn.apply(this,arguments);
+        }
+    }
+
+    function a(){
+        console.log('我是函数a');
+    }
+
+    var copyA = a.fn(function(){
+        console.log('我是a函数额外的功能');
+    })
+
+    // copyA();
+
+    //2、监听数组的变化
+    var methods=['push','pop','shift','unshift','splice','slice','sort','reverse'];
+    var Method = {};
+    for(var i=0;i<methods.length;i++){
+        var method = methods[i];
+        (function(method){
+            var original = Array.prototype[method];
+            Method[method] = function(){
+                console.log('监听数组的变化或者操作函数等');
+                return original.apply(this,arguments);
+            }
+        })(method)
+    }
+    var list = ['a','b','c'];
+    list.__proto__ = Method;
+    list.push('d');//打印：监听数组的变化或者操作函数等
+
+
+
+
+    //3、
+    var tree = {};
+    tree.decorate = function(){
+        console.log('tree');
+    }
+    // console.log(tree)
+
+    // 该方法用于添加额外的装饰器
+
+    tree.getDecorator = function(deco){
+        tree[deco].prototype = this;
+        // console.log(tree[deco].prototype)
+        return new tree[deco];
+    };
+
+    tree.Red = function(){
+        this.decorate = function(){
+            this.Red.prototype.decorate();
+            // console.log(this.Red.prototype);
+            // console.log(this.Red.prototype.decorate);
+            console.log('red');
+        };
+        this.name = 'red';
+    }
+    tree.Blue = function(){
+        this.decorate = function(){
+            this.Blue.prototype.decorate();
+            // console.log(this.Blue.prototype.decorate);
+            console.log('blue');
+        }
+        this.name = 'blue';
+    }
+    tree.Angel = function(){
+        this.decorate = function(){
+            this.Angel.prototype.decorate();
+            // console.log(this.Angel.prototype.decorate);
+            console.log('angle');
+        }
+        this.name = 'angel';
+    }
+
+
+    tree = tree.getDecorator('Blue');
+    tree = tree.getDecorator('Angel');
+    tree = tree.getDecorator('Red');
+    // console.log(tree);
+
+    // tree.decorate();
+
+    /*解析：
+        执行tree = tree.getDecorator('Blue')：
+            tree['Blue'].prototype = tree;
+            tree = {decorate: ƒ, name: "blue"}
+            即tree['Blue']赋值给tree，tree['Blue']的原型指向tree
+        输出:
+        "tree"
+        "blue"
+
+        执行tree = tree.getDecorator('Angel')：
+            tree['Angel'].prototype = tree['Blue'],(这时候tree已经赋值为tree['Blue'])
+            tree = {decorate: ƒ, name: "Angle"}
+            即tree['Angel']赋值给tree，tree['Angel']的原型指向tree['Blue']
+        输出："angel"
+
+        执行tree = tree.getDecorator('Red')：
+            tree['Red'].prototype = tree['Angel'],(这时候tree已经赋值为tree['Angel'])
+            tree = {decorate: ƒ, name: "Red"}
+            即tree['Red']赋值给tree，tree['Red']的原型指向tree['Angel']
+        输出："red"
+    */
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>装饰者模式</title>
+</head>
+<body>
+<script>
+    var observer = {
+        addSubscriber:function (callback){
+            if(typeof callback === "function"){//添加订阅者
+                this.subscribers[this.subscribers.length] = callback;
+            }
+        },
+        removeSubscriber:function (callback){//删除订阅者
+            for(var i=0;i<this.subscribers.length;i++){
+                if(this.subscribers[i] === callback){
+                    delete this.subscribers[i];
+                }
+            }
+        },
+        publish:function (what) {//授受并传递数据给订阅者
+            for(var i=0;i<this.subscribers.length;i++){
+                if(typeof this.subscribers[i] === "function"){
+                    this.subscribers[i](what);
+                }
+            }
+        },
+        make:function(o){//将任意对象转变为一个发布者并为其添加上述方法。
+            for(var i in this){//this->observer{addSubscriber: ƒ, removeSubscriber: ƒ, publish: ƒ, make:f}
+                if(this.hasOwnProperty(i)){//observer.hasOwnProperty('addSubscriber') -> true
+                    o[i] = this[i];
+                    o.subscribers = [];
+                }
+            }//o-> {addSubscriber: ƒ, removeSubscriber: ƒ, publish: ƒ, make:f,subscribers:[],o.XX}
+        }
+    };
+
+    //有个函数blogger和任意一个函数jack
+    var blogger = {
+        writeBlogPost : function(){
+            var content = 'blogger';
+            this.publish(content);
+        }
+    };
+    var jack = {
+        read:function (what){
+            console.log('jack订阅: '+what);
+        }
+    };
+
+    //blogger变为发布者
+    observer.make(blogger);
+
+    //jack订阅blogger
+    blogger.addSubscriber(jack.read);
+
+    //blogger发布信息
+    blogger.writeBlogPost();
+
+    //输出：jack订阅: blogger
+
+
+
+
+
+/**** 简单实例： ****/
+    var Event = function(){
+        this.subs = {};
+    }
+
+    //添加收听者：
+    Event.prototype.addSubscriber=function(k,callback){
+        if(!this.subs[k]){
+            this.subs[k]=[];
+        }
+        this.subs[k].push(callback);
+    };
+    //发布事件：
+    Event.prototype.publish=function(k,item){
+        var fns=this.subs[k];
+
+        if(fns){//防止发布给不存在的对象
+            for(var i=0;i<fns.length;i++){
+                fns[i](item)
+
+            }
+        }
+
+    }
+
+    function reader(item){
+        console.log(item);
+        console.log('我是收听的');
+        console.log(arguments)
+    }
+
+    var event = new Event();
+    event.addSubscriber('a',reader)
+    event.addSubscriber('b',reader)
+    event.publish('a','publish发布信息');
+    event.publish('b','publish发布信息');
+
+</script>
+</body>
+</html>

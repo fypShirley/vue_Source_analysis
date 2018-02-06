@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div>
+    Object.defineProperty实现数据和视图的联动: <br>
+    <span id="nickName"></span>
+    <div id="introduce"></div>
+</div>
+<script>
+    // 视图控制器
+    //设置userInfo的nickName属性时会调用set方法，更新DOM节点的HTML
+
+    var userInfo = {};
+    Object.defineProperty(userInfo,'nickName',{
+        get:function(){
+            return document.getElementById('nickName').innerHTML;
+        },
+        set:function(nick){
+            document.getElementById('nickName').innerHTML = nick
+        }
+    });
+    Object.defineProperty(userInfo,'introduce',{
+        get:function(){
+            return document.getElementById('introduce').innerHTML;
+        },
+        set:function(introduce){
+            document.getElementById('introduce').innerHTML = introduce
+        }
+    });
+    //console.log(userInfo)
+    userInfo.nickName = '我是nickName';
+    userInfo.introduce = '我是introduce'
+
+</script>
+</body>
+</html>

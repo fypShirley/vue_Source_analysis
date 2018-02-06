@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>vue</title>
+</head>
+<body>
+    <h1 id="name">{{name}}</h1>
+    <script src="js-first/observer.js"></script>
+    <script src="js-first/watcher.js"></script>
+    <script src="js-first/selfVue.js"></script>
+<script>
+     /* var library = {
+        book1:{name:''},
+        book2:''
+    }
+    observe(library);
+
+    library.book1.name = 'vue书籍';
+    library.book2 = '没有书';
+    //属性book1执行get
+    //属性：name以及被监听，现在值为：vue书籍
+    //属性：book2以及被监听，现在值为：没有书 */
+
+    var ele = document.querySelector('#name');
+    var self_Vue = new SelfVue({
+        name:'第一次显示数据'
+    },ele,'name');
+
+    window.setTimeout(function(){
+        console.log('值变了');
+        // self_Vue.data.name = '重新赋值了';
+        self_Vue.name = '重新赋值了';
+        /*self_Vue.name2 = '重新赋值了2';
+        self_Vue.name3 = '重新赋值了3';*/
+        console.log(self_Vue)
+    },2000);
+
+
+</script>
+</body>
+</html>

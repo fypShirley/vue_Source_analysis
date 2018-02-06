@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script>
+/** vue.js是通过它实现双向绑定的。*/
+    var a= {}
+    Object.defineProperty(a,"b",{
+        value:123
+    });
+    console.log(a.b);//123
+     /**
+      * 很简单，它接受三个参数，而且都是必填的
+      * 第一个参数：:目标对象
+      * 第二个参数：:需要定义的属性或方法的名字。
+      * 第三个参数：目标属性所拥有的特性。（descriptor）‘
+      * **/
+
+    /**
+     * descriptor以下取值：
+
+     value：属性的值(不用多说了)
+
+     writable：如果为false，属性的值就不能被重写,只能为只读了
+
+     configurable：总开关，一旦为false，就不能再设置他的（value，writable，configurable）
+
+     enumerable：是否能在for...in循环中遍历出来或在Object.keys中列举出来。
+
+     get：
+
+     set：
+     * **/
+
+        /**
+         * 我们只设置了 value，别的并没有设置，
+         * 但是第一次的时候
+         * 可以简单的理解为（暂时这样理解）它会默认帮我们把writable，configurable，enumerable。都设上值，
+         * 而且值还都是false。
+         * 也就是说，上面代码和下面是等价的的（仅限于第一次设置的时候）
+         * **/
+
+        /**
+
+        *var a = {};
+         Object.defineProperty(a, 'b', {
+         value: 123,
+         writable: false,
+         enumerable: false,
+         configurable: false
+        });
+         console.log(a.b); //123
+        * */
+
+    /**
+     * configurable：
+     *总开关，第一次设置 false 之后，，第二次什么设置也不行了，
+     *
+         var a= {}
+         Object.defineProperty(a,"b",{
+                configurable:false
+            })
+        Object.defineProperty(a,"b",{
+            configurable:true
+        })
+        报错error: Uncaught TypeError: Cannot redefine property: b
+     * **/
+
+
+    /**
+     * writable：
+     *设置为fasle，就变成只读了。。
+     *
+         var a= {}
+         Object.defineProperty(a,"b",{
+               value : 123,
+            writable : false
+         });
+         console.log(a.b); // 打印 37
+         a.b = 25; // 没有错误抛出（在严格模式下会抛出，即使之前已经有相同的值）
+         console.log(o.a); // 打印 37， 赋值不起作用。
+     * **/
+
+
+      /**
+     * enumerable：
+     *特性 enumerable 定义了对象的属性是否可以在 for...in 循环和 Object.keys() 中被枚举。
+     * **/
+        var a2= {}
+        Object.defineProperty(a2,"b",{
+            value:3445,
+            enumerable:true
+        });
+        console.log(Object.keys(a2));// 打印["b"]
+
+
+    /**
+     * set/get
+     *
+     * 在 descriptor 中不能同时设置访问器（get 和 set）和 wriable 或 value，否则会错，
+     * 就是说想用 get 和 set，就不能用 writable 或 value 中的任何一个
+     * **/
+
+    var a3= {}
+    Object.defineProperty(a3,"b",{
+        set:function(newValue){
+            console.log("赋值是:"+newValue)
+        },
+        get:function(){
+            console.log("取值:")
+            return 2 //注意这里，我硬编码返回2
+        }
+    });
+    a3.b =1; //打印 值是1
+    console.log(a3.b) ;   //打印 你取值
+                        //打印 2    注意这里，和我的硬编码相同的
+</script>
+</body>
+</html>
